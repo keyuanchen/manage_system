@@ -10,21 +10,39 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside :width="isMenuCollapse ? '64px' : '200px'">
+        <div class="isCollapse">
+          <i
+            @click="isMenuCollapse = !isMenuCollapse"
+            v-if="!isMenuCollapse"
+            class="iconfont icon-zuojiantou"
+          ></i>
+          <i
+            @click="isMenuCollapse = !isMenuCollapse"
+            v-else
+            class="iconfont icon-youjiantou"
+          ></i>
+        </div>
         <el-menu
+          :collapse="isMenuCollapse"
+          :collapse-transition="false"
           :default-active="activeIndex"
           unique-opened
           router
           background-color="#fff"
           active-text-color="#8ce050"
         >
-          <el-submenu :index="item.id + ''" v-for="item in menuData" :key="item.id">
+          <el-submenu
+            :index="item.id + ''"
+            v-for="item in menuData"
+            :key="item.id"
+          >
             <template slot="title">
               <i :class="'iconfont' + ' ' + icons[item.id]"></i>
               <span>{{ item.authName }}</span>
             </template>
             <el-menu-item
-              :index="'/'+ iten.path"
+              :index="'/' + iten.path"
               v-for="iten in item.children"
               :key="iten.id"
               @click="menuItemTap('/' + iten.path)"
@@ -47,7 +65,7 @@
 <script>
 export default {
   components: {},
-  data () {
+  data() {
     return {
       // 左侧导航默认激活的菜单
       activeIndex: '',
@@ -60,11 +78,13 @@ export default {
         '125': 'icon-yonghu',
         '102': 'icon-dingdan',
         '145': 'icon-shujutongji'
-      }
+      },
+      // 左侧菜单栏是否向左折叠
+      isMenuCollapse: false
     }
   },
-  created () { },
-  mounted () {
+  created() {},
+  mounted() {
     this.getNavMenuData()
     // 获取本地保存的菜单激活项
     // console.log(window.sessionStorage.getItem('activeIndex'))
@@ -73,13 +93,13 @@ export default {
   computed: {},
   methods: {
     // 退出登录
-    signOut () {
+    signOut() {
       window.sessionStorage.clear()
       // 跳转到登录页面
       this.$router.replace('/login')
     },
     // 获取左侧菜单数据
-    async getNavMenuData () {
+    async getNavMenuData() {
       const { data: res } = await this.$axios({
         url: 'menus'
       })
@@ -91,7 +111,7 @@ export default {
       this.menuData = res.data
     },
     // 二级菜单选中
-    menuItemTap (path) {
+    menuItemTap(path) {
       this.activeIndex = path
       // 保存到本地
       window.sessionStorage.setItem('activeIndex', path)
@@ -131,5 +151,12 @@ export default {
 }
 .iconfont {
   margin-right: 5px;
+}
+.isCollapse {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
